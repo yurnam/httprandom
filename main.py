@@ -1,8 +1,14 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import json
 import llmintegrator
+import threading
+import uuid
+import time
 
 app = Flask(__name__)
+
+# Store AI responses in memory with their status
+ai_responses = {}  # {request_id: {"status": "pending|ready", "content": "...", "timestamp": float}}
 
 # Optional: keep requests small so you don't accidentally feed megabytes into the model
 app.config["MAX_CONTENT_LENGTH"] = 256 * 1024  # 256 KiB
@@ -144,9 +150,173 @@ def strip_fences(s: str) -> str:
         s = s.replace(p, "")
     return s.strip()
 
+def cleanup_old_responses():
+    """Remove responses older than 10 minutes to prevent memory leaks"""
+    current_time = time.time()
+    to_delete = []
+    for req_id, data in ai_responses.items():
+        if current_time - data.get("timestamp", 0) > 600:  # 10 minutes
+            to_delete.append(req_id)
+    for req_id in to_delete:
+        del ai_responses[req_id]
+
+def generate_ai_response_async(request_id, prompt):
+    """Generate AI response in a background thread"""
+    try:
+        response = llm.generate_response(prompt)
+        response = strip_fences(response)
+        
+        # Inject static disclaimer banner
+        if "</body>" in response.lower():
+            response = response.replace("</body>", AI_DISCLAIMER_BANNER + "\n</body>")
+        else:
+            # Fallback: append if body tag is missing/broken
+            response += AI_DISCLAIMER_BANNER
+        
+        ai_responses[request_id]["status"] = "ready"
+        ai_responses[request_id]["content"] = response
+    except Exception as e:
+        ai_responses[request_id]["status"] = "error"
+        ai_responses[request_id]["content"] = f"<html><body><h1>Error generating response</h1><p>{str(e)}</p></body></html>"
+
+LOADING_PAGE_TEMPLATE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    <style>
+        body {{
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }}
+        .loading-container {{
+            text-align: center;
+            padding: 40px;
+        }}
+        .spinner {{
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            border: 8px solid rgba(255, 255, 255, 0.2);
+            border-top: 8px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }}
+        @keyframes spin {{
+            0% {{ transform: rotate(0deg); }}
+            100% {{ transform: rotate(360deg); }}
+        }}
+        h1 {{
+            font-size: 2.5em;
+            margin: 0 0 20px 0;
+            font-weight: 300;
+        }}
+        p {{
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin: 10px 0;
+        }}
+        .dots {{
+            display: inline-block;
+        }}
+        .dots::after {{
+            content: '.';
+            animation: dots 1.5s steps(4, end) infinite;
+        }}
+        @keyframes dots {{
+            0%, 20% {{ content: '.'; }}
+            40% {{ content: '..'; }}
+            60%, 100% {{ content: '...'; }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="loading-container">
+        <div class="spinner"></div>
+        <h1>Generating Your Page</h1>
+        <p>The AI is thinking<span class="dots"></span></p>
+        <p style="font-size: 0.9em; opacity: 0.7; margin-top: 30px;">This may take a few moments</p>
+    </div>
+    <script>
+        const requestId = "{request_id}";
+        let pollCount = 0;
+        const maxPolls = 180; // 3 minutes max (180 * 1000ms)
+        
+        function checkStatus() {{
+            pollCount++;
+            
+            if (pollCount > maxPolls) {{
+                document.body.innerHTML = '<div class="loading-container"><h1>Timeout</h1><p>The AI took too long to respond. Please try again.</p></div>';
+                return;
+            }}
+            
+            fetch('/api/status/' + requestId)
+                .then(response => response.json())
+                .then(data => {{
+                    if (data.status === 'ready') {{
+                        // Replace entire page with AI content
+                        document.open();
+                        document.write(data.content);
+                        document.close();
+                    }} else if (data.status === 'error') {{
+                        document.body.innerHTML = '<div class="loading-container"><h1>Error</h1><p>' + data.error + '</p></div>';
+                    }} else {{
+                        // Still pending, check again
+                        setTimeout(checkStatus, 1000);
+                    }}
+                }})
+                .catch(error => {{
+                    console.error('Error:', error);
+                    setTimeout(checkStatus, 1000);
+                }});
+        }}
+        
+        // Start checking after a short delay
+        setTimeout(checkStatus, 1000);
+    </script>
+</body>
+</html>
+"""
+
+@app.route("/api/status/<request_id>", methods=["GET"])
+def check_status(request_id):
+    """Check the status of an AI generation request"""
+    if request_id not in ai_responses:
+        return jsonify({"status": "not_found", "error": "Request ID not found"}), 404
+    
+    data = ai_responses[request_id]
+    if data["status"] == "ready":
+        return jsonify({"status": "ready", "content": data["content"]})
+    elif data["status"] == "error":
+        return jsonify({"status": "error", "error": data.get("content", "Unknown error")})
+    else:
+        return jsonify({"status": "pending"})
+
 @app.route("/<path:path>", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
 @app.route("/", defaults={"path": ""}, methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
 def catch_all(path):
+    # Clean up old responses periodically
+    cleanup_old_responses()
+    
+    # Generate unique request ID
+    request_id = str(uuid.uuid4())
+    
+    # Initialize response status
+    ai_responses[request_id] = {
+        "status": "pending",
+        "content": None,
+        "timestamp": time.time()
+    }
+    
+    # Build the request dump for the AI prompt
     request_dump = build_request_dump()
 
     prompt = (
@@ -170,18 +340,14 @@ def catch_all(path):
         "=== END REQUEST DATA ===\n"
     )
 
-    response = llm.generate_response(prompt)
-    response = strip_fences(response)
-
-    # Inject static disclaimer banner
-    if "</body>" in response.lower():
-        response = response.replace("</body>", AI_DISCLAIMER_BANNER + "\n</body>")
-    else:
-        # Fallback: append if body tag is missing/broken
-        response += AI_DISCLAIMER_BANNER
-
-    # Force content-type HTML
-    return response, 200, {"Content-Type": "text/html; charset=utf-8"}
+    # Start AI generation in a background thread
+    thread = threading.Thread(target=generate_ai_response_async, args=(request_id, prompt))
+    thread.daemon = True
+    thread.start()
+    
+    # Return loading page immediately
+    loading_page = LOADING_PAGE_TEMPLATE.format(request_id=request_id)
+    return loading_page, 200, {"Content-Type": "text/html; charset=utf-8"}
 
 if __name__ == "__main__":
     # debug=True can execute arbitrary code via the debugger PIN if exposed; keep it local-only.

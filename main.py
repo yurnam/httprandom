@@ -372,4 +372,4 @@ def catch_all(path):
 
 if __name__ == "__main__":
     # debug=True can execute arbitrary code via the debugger PIN if exposed; keep it local-only.
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    app.run(host="0.0.0.0", port=5001, debug=False)

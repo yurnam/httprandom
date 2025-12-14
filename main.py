@@ -181,7 +181,8 @@ def generate_ai_response_async(request_id, prompt):
     except Exception as e:
         with ai_responses_lock:
             ai_responses[request_id]["status"] = "error"
-            ai_responses[request_id]["content"] = f"<html><body><h1>Error generating response</h1><p>{str(e)}</p></body></html>"
+            # Don't expose exception details for security, just a generic message
+            ai_responses[request_id]["content"] = "An error occurred while generating the page. Please try again."
 
 LOADING_PAGE_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">

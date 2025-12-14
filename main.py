@@ -9,6 +9,7 @@ app = Flask(__name__)
 
 # Store AI responses in memory with their status
 ai_responses = {}  # {request_id: {"status": "pending|ready", "content": "...", "timestamp": float}}
+ai_responses_lock = threading.Lock()  # Protect shared dictionary from race conditions
 
 # Optional: keep requests small so you don't accidentally feed megabytes into the model
 app.config["MAX_CONTENT_LENGTH"] = 256 * 1024  # 256 KiB
@@ -154,11 +155,12 @@ def cleanup_old_responses():
     """Remove responses older than 10 minutes to prevent memory leaks"""
     current_time = time.time()
     to_delete = []
-    for req_id, data in ai_responses.items():
-        if current_time - data.get("timestamp", 0) > 600:  # 10 minutes
-            to_delete.append(req_id)
-    for req_id in to_delete:
-        del ai_responses[req_id]
+    with ai_responses_lock:
+        for req_id, data in ai_responses.items():
+            if current_time - data.get("timestamp", 0) > 600:  # 10 minutes
+                to_delete.append(req_id)
+        for req_id in to_delete:
+            del ai_responses[req_id]
 
 def generate_ai_response_async(request_id, prompt):
     """Generate AI response in a background thread"""
@@ -173,11 +175,13 @@ def generate_ai_response_async(request_id, prompt):
             # Fallback: append if body tag is missing/broken
             response += AI_DISCLAIMER_BANNER
         
-        ai_responses[request_id]["status"] = "ready"
-        ai_responses[request_id]["content"] = response
+        with ai_responses_lock:
+            ai_responses[request_id]["status"] = "ready"
+            ai_responses[request_id]["content"] = response
     except Exception as e:
-        ai_responses[request_id]["status"] = "error"
-        ai_responses[request_id]["content"] = f"<html><body><h1>Error generating response</h1><p>{str(e)}</p></body></html>"
+        with ai_responses_lock:
+            ai_responses[request_id]["status"] = "error"
+            ai_responses[request_id]["content"] = f"<html><body><h1>Error generating response</h1><p>{str(e)}</p></body></html>"
 
 LOADING_PAGE_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
@@ -248,7 +252,7 @@ LOADING_PAGE_TEMPLATE = """<!DOCTYPE html>
     <script>
         const requestId = "{request_id}";
         let pollCount = 0;
-        const maxPolls = 180; // 3 minutes max (180 * 1000ms)
+        const maxPolls = 180; // 3 minutes max (180 seconds at 1 second intervals)
         
         function checkStatus() {{
             pollCount++;
@@ -289,16 +293,17 @@ LOADING_PAGE_TEMPLATE = """<!DOCTYPE html>
 @app.route("/api/status/<request_id>", methods=["GET"])
 def check_status(request_id):
     """Check the status of an AI generation request"""
-    if request_id not in ai_responses:
-        return jsonify({"status": "not_found", "error": "Request ID not found"}), 404
-    
-    data = ai_responses[request_id]
-    if data["status"] == "ready":
-        return jsonify({"status": "ready", "content": data["content"]})
-    elif data["status"] == "error":
-        return jsonify({"status": "error", "error": data.get("content", "Unknown error")})
-    else:
-        return jsonify({"status": "pending"})
+    with ai_responses_lock:
+        if request_id not in ai_responses:
+            return jsonify({"status": "not_found", "error": "Request ID not found"}), 404
+        
+        data = ai_responses[request_id]
+        if data["status"] == "ready":
+            return jsonify({"status": "ready", "content": data["content"]})
+        elif data["status"] == "error":
+            return jsonify({"status": "error", "error": data.get("content", "Unknown error")})
+        else:
+            return jsonify({"status": "pending"})
 
 @app.route("/<path:path>", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
 @app.route("/", defaults={"path": ""}, methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
@@ -310,11 +315,12 @@ def catch_all(path):
     request_id = str(uuid.uuid4())
     
     # Initialize response status
-    ai_responses[request_id] = {
-        "status": "pending",
-        "content": None,
-        "timestamp": time.time()
-    }
+    with ai_responses_lock:
+        ai_responses[request_id] = {
+            "status": "pending",
+            "content": None,
+            "timestamp": time.time()
+        }
     
     # Build the request dump for the AI prompt
     request_dump = build_request_dump()

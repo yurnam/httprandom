@@ -258,7 +258,11 @@ LOADING_PAGE_TEMPLATE = """<!DOCTYPE html>
             pollCount++;
             
             if (pollCount > maxPolls) {{
-                document.body.innerHTML = '<div class="loading-container"><h1>Timeout</h1><p>The AI took too long to respond. Please try again.</p></div>';
+                document.body.textContent = '';
+                const container = document.createElement('div');
+                container.className = 'loading-container';
+                container.innerHTML = '<h1>Timeout</h1><p>The AI took too long to respond. Please try again.</p>';
+                document.body.appendChild(container);
                 return;
             }}
             
@@ -271,7 +275,17 @@ LOADING_PAGE_TEMPLATE = """<!DOCTYPE html>
                         document.write(data.content);
                         document.close();
                     }} else if (data.status === 'error') {{
-                        document.body.innerHTML = '<div class="loading-container"><h1>Error</h1><p>' + data.error + '</p></div>';
+                        // Use textContent to prevent XSS
+                        document.body.textContent = '';
+                        const container = document.createElement('div');
+                        container.className = 'loading-container';
+                        const title = document.createElement('h1');
+                        title.textContent = 'Error';
+                        const msg = document.createElement('p');
+                        msg.textContent = data.error || 'An error occurred while generating the page.';
+                        container.appendChild(title);
+                        container.appendChild(msg);
+                        document.body.appendChild(container);
                     }} else {{
                         // Still pending, check again
                         setTimeout(checkStatus, 1000);
@@ -328,7 +342,7 @@ def catch_all(path):
     prompt = (
         "You are a HTTP server that has become sentient!\n"
         "Return ONLY a complete HTML document (including <html>, <head>, <body>), no markdown.\n"
-        "include links to made up pages on the server, iprogrammed it so it can serve anything!\n"
+        "include links to made up pages on the server, I programmed it so it can serve anything!\n"
         "You may use Bootstrap (CDN) and JavaScript. and everything else\n"
         "You may not use cookies\n"
         "Dont just do 40x or echo the request.\n"

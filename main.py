@@ -15,7 +15,7 @@ ai_responses_lock = threading.Lock()  # Protect shared dictionary from race cond
 app.config["MAX_CONTENT_LENGTH"] = 256 * 1024  # 256 KiB
 
 llm = llmintegrator.LLMIntegrator()
-llm.model_name = "llava:13b"
+llm.model_name = "moondream:latest"
 
 REMOVE_PATTERNS = [
     "```html", "```HTML", "```",  # common fences

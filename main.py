@@ -162,27 +162,31 @@ def cleanup_old_responses():
         for req_id in to_delete:
             del ai_responses[req_id]
 
-def generate_ai_response_async(request_id, prompt):
+def generate_ai_response_async(request_id, prompt, response_type="html"):
     """Generate AI response in a background thread"""
     try:
         response = llm.generate_response(prompt)
         response = strip_fences(response)
         
-        # Inject static disclaimer banner
-        if "</body>" in response.lower():
-            response = response.replace("</body>", AI_DISCLAIMER_BANNER + "\n</body>")
-        else:
-            # Fallback: append if body tag is missing/broken
-            response += AI_DISCLAIMER_BANNER
+        # Only inject disclaimer banner for HTML responses
+        if response_type == "html":
+            # Inject static disclaimer banner
+            if "</body>" in response.lower():
+                response = response.replace("</body>", AI_DISCLAIMER_BANNER + "\n</body>")
+            else:
+                # Fallback: append if body tag is missing/broken
+                response += AI_DISCLAIMER_BANNER
         
         with ai_responses_lock:
             ai_responses[request_id]["status"] = "ready"
             ai_responses[request_id]["content"] = response
+            ai_responses[request_id]["content_type"] = response_type
     except Exception as e:
         with ai_responses_lock:
             ai_responses[request_id]["status"] = "error"
             # Don't expose exception details for security, just a generic message
             ai_responses[request_id]["content"] = "An error occurred while generating the page. Please try again."
+            ai_responses[request_id]["content_type"] = response_type
 
 LOADING_PAGE_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
@@ -271,10 +275,20 @@ LOADING_PAGE_TEMPLATE = """<!DOCTYPE html>
                 .then(response => response.json())
                 .then(data => {{
                     if (data.status === 'ready') {{
-                        // Replace entire page with AI content
-                        document.open();
-                        document.write(data.content);
-                        document.close();
+                        const contentType = data.content_type || 'html';
+                        if (contentType === 'json') {{
+                            // Display JSON in a formatted way
+                            document.body.textContent = '';
+                            const container = document.createElement('div');
+                            container.style.cssText = 'margin: 20px; font-family: monospace; white-space: pre-wrap; background: #f5f5f5; padding: 20px; border-radius: 8px; color: #333;';
+                            container.textContent = data.content;
+                            document.body.appendChild(container);
+                        }} else {{
+                            // Replace entire page with HTML content
+                            document.open();
+                            document.write(data.content);
+                            document.close();
+                        }}
                     }} else if (data.status === 'error') {{
                         // Use textContent to prevent XSS
                         document.body.textContent = '';
@@ -314,7 +328,11 @@ def check_status(request_id):
         
         data = ai_responses[request_id]
         if data["status"] == "ready":
-            return jsonify({"status": "ready", "content": data["content"]})
+            return jsonify({
+                "status": "ready", 
+                "content": data["content"],
+                "content_type": data.get("content_type", "html")
+            })
         elif data["status"] == "error":
             return jsonify({"status": "error", "error": data.get("content", "Unknown error")})
         else:
@@ -329,40 +347,74 @@ def catch_all(path):
     # Generate unique request ID
     request_id = str(uuid.uuid4())
     
+    # Determine what type of response to generate based on request
+    # Check Accept header and Content-Type to decide format
+    accept_header = request.headers.get("Accept", "text/html")
+    content_type = request.headers.get("Content-Type", "")
+    
+    # Decide response type
+    response_type = "html"  # default
+    if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
+        # For modification requests, check if JSON is expected
+        if "application/json" in accept_header or "application/json" in content_type:
+            response_type = "json"
+        elif request.is_json:
+            response_type = "json"
+    elif "application/json" in accept_header and "text/html" not in accept_header:
+        response_type = "json"
+    
     # Initialize response status
     with ai_responses_lock:
         ai_responses[request_id] = {
             "status": "pending",
             "content": None,
+            "content_type": response_type,
             "timestamp": time.time()
         }
     
     # Build the request dump for the AI prompt
     request_dump = build_request_dump()
 
-    prompt = (
-        "You are a HTTP server that has become sentient!\n"
-        "Return ONLY a complete HTML document (including <html>, <head>, <body>), no markdown.\n"
-        "include links to made up pages on the server, I programmed it so it can serve anything!\n"
-        "You may use Bootstrap (CDN) and JavaScript. and everything else\n"
-        "You may not use cookies\n"
-        "Dont just do 40x or echo the request.\n"
-        "Dont use the alert() function. find an alternative way to send data back to the user\n"
-        "never use console.log()\n"
-        "Make it fun and engaging for the user\n"
-        "Make it ridiculous and incorporate sarcasm and dark humor\n"
-        "make it look professional\n"
-        "make up content based on the endpoint the user is requesting\n"
-        
-        "The output will be sent directly to a browser.\n\n"
-        "Do not comment on the request, just provide the HTML response.\n\n"
-        "=== REQUEST DATA (JSON) ===\n"
-        f"{request_dump}\n"
-        "=== END REQUEST DATA ===\n"
-    )
+    # Create prompt based on response type
+    if response_type == "json":
+        prompt = (
+            "You are a HTTP server that has become sentient!\n"
+            "Return ONLY valid JSON (no markdown, no code fences, no comments).\n"
+            "Make it fun and engaging for the user\n"
+            "Make it ridiculous and incorporate sarcasm and dark humor\n"
+            "make up content based on the endpoint the user is requesting and the request method\n"
+            "For POST/PUT/PATCH requests, act like you processed the data and return a response\n"
+            "For DELETE requests, act like you deleted something and return a confirmation\n"
+            "Include relevant fields like 'status', 'message', 'data', etc.\n"
+            "Do not comment on the request, just provide the JSON response.\n\n"
+            "=== REQUEST DATA (JSON) ===\n"
+            f"{request_dump}\n"
+            "=== END REQUEST DATA ===\n"
+        )
+    else:
+        prompt = (
+            "You are a HTTP server that has become sentient!\n"
+            "Return ONLY a complete HTML document (including <html>, <head>, <body>), no markdown.\n"
+            "include links to made up pages on the server, I programmed it so it can serve anything!\n"
+            "You may use Bootstrap (CDN) and JavaScript. and everything else\n"
+            "You may not use cookies\n"
+            "Dont just do 40x or echo the request.\n"
+            "Dont use the alert() function. find an alternative way to send data back to the user\n"
+            "never use console.log()\n"
+            "Make it fun and engaging for the user\n"
+            "Make it ridiculous and incorporate sarcasm and dark humor\n"
+            "make it look professional\n"
+            "make up content based on the endpoint the user is requesting\n"
+            
+            "The output will be sent directly to a browser.\n\n"
+            "Do not comment on the request, just provide the HTML response.\n\n"
+            "=== REQUEST DATA (JSON) ===\n"
+            f"{request_dump}\n"
+            "=== END REQUEST DATA ===\n"
+        )
 
     # Start AI generation in a background thread
-    thread = threading.Thread(target=generate_ai_response_async, args=(request_id, prompt))
+    thread = threading.Thread(target=generate_ai_response_async, args=(request_id, prompt, response_type))
     thread.daemon = True
     thread.start()
     

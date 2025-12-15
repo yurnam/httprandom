@@ -430,7 +430,6 @@ def catch_all(path):
             "You may generate images and embed them as base64 data or use SVG\n"
             "You may use random images form any website (like unsplash, imgur ...) by linking to them directly\n"
             "You may not use cookies\n"
-            "Don't just do 40x or echo the request.\n"
             "Don't use the alert() function. find an alternative way to send data back to the user\n"
             "never use console.log()\n"
             "Make it fun and engaging for the user\n"

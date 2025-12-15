@@ -414,6 +414,7 @@ def catch_all(path):
             "The output will be sent directly to a browser.\n\n"
             "Do not comment on the request, do not add notes! just provide the HTML response.\n\n"
             "i have included the source code of the server so you can actually behave accordingly.\n\n"
+            "you can also refer to the source code in your responses.\n\n"
             "=== REQUEST DATA (JSON) ===\n"
             f"{request_dump}\n"
             "=== END REQUEST DATA ===\n"

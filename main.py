@@ -1,9 +1,10 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import json
 import llmintegrator
 import threading
 import uuid
 import time
+import os
 
 app = Flask(__name__)
 
@@ -193,7 +194,23 @@ LOADING_PAGE_TEMPLATE = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading...</title>
+    <meta name="description" content="An AI-powered HTTP server that generates unique, sarcastic responses to every request. Experience the internet like never before with dynamically created content.">
+    <meta name="keywords" content="AI, HTTP server, dynamic content, artificial intelligence, web generation, sarcastic responses">
+    <meta name="author" content="HTTPRandom">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="HTTPRandom - AI-Generated Web Content">
+    <meta property="og:description" content="An AI-powered HTTP server that generates unique, sarcastic responses to every request.">
+    <meta property="og:site_name" content="HTTPRandom">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="HTTPRandom - AI-Generated Web Content">
+    <meta name="twitter:description" content="An AI-powered HTTP server that generates unique, sarcastic responses to every request.">
+    
+    <title>Loading... | HTTPRandom - AI-Generated Content</title>
     <style>
         body {{
             margin: 0;
@@ -337,6 +354,18 @@ def check_status(request_id):
             return jsonify({"status": "error", "error": data.get("content", "Unknown error")})
         else:
             return jsonify({"status": "pending"})
+
+@app.route("/favicon.ico")
+def favicon():
+    """Serve the favicon without triggering AI generation"""
+    static_dir = os.path.join(os.path.dirname(__file__), 'static')
+    return send_from_directory(static_dir, 'favicon.ico', mimetype='image/x-icon')
+
+@app.route("/robots.txt")
+def robots():
+    """Serve robots.txt without triggering AI generation"""
+    static_dir = os.path.join(os.path.dirname(__file__), 'static')
+    return send_from_directory(static_dir, 'robots.txt', mimetype='text/plain')
 
 @app.route("/<path:path>", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
 @app.route("/", defaults={"path": ""}, methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])

@@ -401,6 +401,8 @@ def catch_all(path):
             "Don't just do 40x or echo the request.\n"
             "Don't use the alert() function. find an alternative way to send data back to the user\n"
             "never use console.log()\n"
+            "if the request is about some games include code that resembles the game so the user can play it in the browser\n"
+            "games should be sarcastic, buggy and incomplete\n"
             "Make it fun and engaging for the user\n"
             "Make it ridiculous and incorporate sarcasm and dark humor\n"
             "make it look professional\n"

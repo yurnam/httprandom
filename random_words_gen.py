@@ -6,7 +6,7 @@ def generate_sarcastic_words():
     llm = llmintegrator.LLMIntegrator()
     llm.model_name = "granite4:latest"
     # fallback list in case LLM fails
-    words = ['quantum physics', 'serendipity', 'the art of procrastination', 'existential dread', 'the philosophy of '
+    words = ['llm_refused', 'quantum physics', 'serendipity', 'the art of procrastination', 'existential dread', 'the philosophy of '
                                                                                                   'nothingness', 'the beauty of monotony', 'the allure of simplicity', 'the complexity of simplicity', 'the irony of being ironic', 'the paradox of non-sequiturs', 'the humor in tragedy', 'the tragedy in comedy', 'the joy in sadness', 'the sadness in joy', 'the lightness of gravity', 'the heaviness of air', 'the weightlessness of dreams', 'the solidity of illusions', 'the fluidity of stillness', 'the motion of inaction']
 
     r = llm.generate_response("give me a python array with 20 random sarcastic topic words from any category. start with "

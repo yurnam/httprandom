@@ -1,0 +1,15 @@
+# robots.txt for httprandom - AI-generated content site
+# This site generates dynamic AI content for every request
+
+User-agent: *
+# Allow all bots to crawl the site
+Allow: /
+
+# Disallow the API endpoints as they're not meant for search engines
+Disallow: /api/
+
+# Crawl delay to be nice to the AI generation system
+Crawl-delay: 1
+
+# Sitemap (optional - could be generated dynamically in the future)
+# Sitemap: https://aware-server.net/sitemap.xml

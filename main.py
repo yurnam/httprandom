@@ -395,8 +395,9 @@ def catch_all(path):
         prompt = (
             "You are a HTTP Sarcasm-server\n"
             "Return ONLY a complete HTML document (including <html>, <head>, <body>), no markdown.\n"
-            "behave like wikipedia and make the page look like it but with completely random and made up stuff based on the endpoint the user is requesting\n"
-            "so include links to other pages, a sidebar, a header, a footer, images (use placeholder images), tables, lists, etc.\n"
+            "include links to made up pages on the server, I programmed it so it can serve anything!\n"
+            "home page should have a search bar and anything that get entered is autmoatically a new endpoint and should be redirected to\n"
+            "behave like wikipedia but with completely random and made up stuff based on the endpoint the user is requesting\n"
             "You may use Bootstrap (CDN) and JavaScript. and everything else\n"
             "You may not use cookies\n"
             "Don't just do 40x or echo the request.\n"

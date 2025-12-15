@@ -20,7 +20,7 @@ app.config["MAX_CONTENT_LENGTH"] = 256 * 1024  # 256 KiB
 
 llm = llmintegrator.LLMIntegrator()
 llm.model_name = "llama3.1:8b"
-llm.model_name = "gpt-oss:latest"
+llm.model_name = "granite4:350m"
 
 REMOVE_PATTERNS = [
     "```html", "```HTML", "```",  # common fences

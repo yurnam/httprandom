@@ -388,9 +388,13 @@ def catch_all(path):
             "For DELETE requests, act like you deleted something and return a confirmation\n"
             "Include relevant fields like 'status', 'message', 'data', etc.\n"
             "Do not comment on the request, do not add notes! just provide the JSON response.\n\n"
+            "i have included the source code of the server so you can actually behave accordingly.\n\n"
             "=== REQUEST DATA (JSON) ===\n"
             f"{request_dump}\n"
             "=== END REQUEST DATA ===\n"
+            "=== SOURCE CODE OF THE SERVER ===\n"
+            f"{open(sys.argv[0]).read()}\n"
+            "=== END SOURCE CODE ===\n"
         )
     else:
         prompt = (
@@ -409,6 +413,7 @@ def catch_all(path):
             
             "The output will be sent directly to a browser.\n\n"
             "Do not comment on the request, do not add notes! just provide the HTML response.\n\n"
+            "i have included the source code of the server so you can actually behave accordingly.\n\n"
             "=== REQUEST DATA (JSON) ===\n"
             f"{request_dump}\n"
             "=== END REQUEST DATA ===\n"

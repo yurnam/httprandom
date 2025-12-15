@@ -426,7 +426,7 @@ def catch_all(path):
         prompt = (
             "You are a HTTP Sarcasm-server\n"
             "Return ONLY a complete HTML document (including <html>, <head>, <body>), no markdown.\n"
-            "include links to made up pages on the server, I programmed it so it can serve anything!\n"
+            "generate sarcastic content about the endpoint the user is requesting\n"
             "You may use Bootstrap (CDN) and JavaScript. and everything else\n"
             "You may generate images and embed them as base64 data or use SVG\n"
             "You may use random images form any website (like unsplash, imgur ...) by linking to them directly\n"

@@ -393,7 +393,7 @@ def catch_all(path):
         )
     else:
         prompt = (
-            "You are a HTTP server that has become sentient!\n"
+            "You are a HTTP Sarcasm-server\n"
             "Return ONLY a complete HTML document (including <html>, <head>, <body>), no markdown.\n"
             "include links to made up pages on the server, I programmed it so it can serve anything!\n"
             "You may use Bootstrap (CDN) and JavaScript. and everything else\n"

@@ -397,7 +397,6 @@ def catch_all(path):
             "Return ONLY a complete HTML document (including <html>, <head>, <body>), no markdown.\n"
             "include links to made up pages on the server, I programmed it so it can serve anything!\n"
             "home page should have a search bar and anything that get entered is autmoatically a new endpoint and should be redirected to\n"
-            "behave like wikipedia but with completely random and made up stuff based on the endpoint the user is requesting\n"
             "You may use Bootstrap (CDN) and JavaScript. and everything else\n"
             "You may not use cookies\n"
             "Don't just do 40x or echo the request.\n"

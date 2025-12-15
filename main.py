@@ -428,6 +428,7 @@ def catch_all(path):
             "include links to made up pages on the server, I programmed it so it can serve anything!\n"
             "You may use Bootstrap (CDN) and JavaScript. and everything else\n"
             "You may generate images and embed them as base64 data or use SVG\n"
+            "You may use random images form any website (like unsplash, imgur ...) by linking to them directly\n"
             "You may not use cookies\n"
             "Don't just do 40x or echo the request.\n"
             "Don't use the alert() function. find an alternative way to send data back to the user\n"

@@ -393,7 +393,7 @@ def catch_all(path):
             f"{request_dump}\n"
             "=== END REQUEST DATA ===\n"
             "=== SOURCE CODE OF THE SERVER ===\n"
-            f"{open(sys.argv[0]).read()}\n"
+            f"{ open('main.py').read() }\n"            
             "=== END SOURCE CODE ===\n"
         )
     else:
@@ -419,7 +419,7 @@ def catch_all(path):
             f"{request_dump}\n"
             "=== END REQUEST DATA ===\n"
             "=== SOURCE CODE OF THE SERVER ===\n"
-            f"{ open(sys.argv[0]).read() }\n"
+            f"{ open('main.py').read() }\n"
             "=== END SOURCE CODE ===\n"
         )
 

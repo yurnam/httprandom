@@ -5,6 +5,7 @@ import threading
 import uuid
 import time
 import os
+import random_words
 
 app = Flask(__name__)
 
@@ -435,6 +436,7 @@ def catch_all(path):
             "Make it fun and engaging for the user\n"
             "Make it ridiculous and incorporate sarcasm and dark humor\n"
             "make it look professional\n"
+            f"include these links: {random_words.get_random_10_links()}"
             "make up content based on the endpoint the user is requesting\n"
             
             "The output will be sent directly to a browser.\n\n"

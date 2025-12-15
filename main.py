@@ -19,7 +19,7 @@ ai_responses_lock = threading.Lock()  # Protect shared dictionary from race cond
 app.config["MAX_CONTENT_LENGTH"] = 256 * 1024  # 256 KiB
 
 llm = llmintegrator.LLMIntegrator()
-llm.model_name = "deepseek-r1:1.5b"
+llm.model_name = "granite4:latest"
 
 REMOVE_PATTERNS = [
     "```html", "```HTML", "```",  # common fences

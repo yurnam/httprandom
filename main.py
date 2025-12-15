@@ -4,7 +4,6 @@ import llmintegrator
 import threading
 import uuid
 import time
-import sys
 
 app = Flask(__name__)
 
@@ -16,7 +15,7 @@ ai_responses_lock = threading.Lock()  # Protect shared dictionary from race cond
 app.config["MAX_CONTENT_LENGTH"] = 256 * 1024  # 256 KiB
 
 llm = llmintegrator.LLMIntegrator()
-llm.model_name = "codellama:7b"
+llm.model_name = "llama3.1:8b"
 
 REMOVE_PATTERNS = [
     "```html", "```HTML", "```",  # common fences
@@ -388,13 +387,9 @@ def catch_all(path):
             "For DELETE requests, act like you deleted something and return a confirmation\n"
             "Include relevant fields like 'status', 'message', 'data', etc.\n"
             "Do not comment on the request, do not add notes! just provide the JSON response.\n\n"
-            "i have included the source code of the server so you can actually behave accordingly.\n\n"
             "=== REQUEST DATA (JSON) ===\n"
             f"{request_dump}\n"
             "=== END REQUEST DATA ===\n"
-            "=== SOURCE CODE OF THE SERVER ===\n"
-            f"{ open('main.py').read() }\n"            
-            "=== END SOURCE CODE ===\n"
         )
     else:
         prompt = (
@@ -413,14 +408,10 @@ def catch_all(path):
             
             "The output will be sent directly to a browser.\n\n"
             "Do not comment on the request, do not add notes! just provide the HTML response.\n\n"
-            "i have included the source code of the server so you can actually behave accordingly.\n\n"
-            "you can also refer to the source code in your responses.\n\n"
             "=== REQUEST DATA (JSON) ===\n"
             f"{request_dump}\n"
             "=== END REQUEST DATA ===\n"
             "=== SOURCE CODE OF THE SERVER ===\n"
-            f"{ open('main.py').read() }\n"
-            "=== END SOURCE CODE ===\n"
         )
 
     # Start AI generation in a background thread
@@ -433,6 +424,5 @@ def catch_all(path):
     return loading_page, 200, {"Content-Type": "text/html; charset=utf-8"}
 
 if __name__ == "__main__":
-    print(open(sys.argv[0]).read())
     # debug=True can execute arbitrary code via the debugger PIN if exposed; keep it local-only.
     app.run(host="0.0.0.0", port=5001, debug=False)

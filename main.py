@@ -386,7 +386,7 @@ def catch_all(path):
             "For POST/PUT/PATCH requests, act like you processed the data and return a response\n"
             "For DELETE requests, act like you deleted something and return a confirmation\n"
             "Include relevant fields like 'status', 'message', 'data', etc.\n"
-            "Do not comment on the request, just provide the JSON response.\n\n"
+            "Do not comment on the request, do not add notes! just provide the JSON response.\n\n"
             "=== REQUEST DATA (JSON) ===\n"
             f"{request_dump}\n"
             "=== END REQUEST DATA ===\n"
@@ -407,7 +407,7 @@ def catch_all(path):
             "make up content based on the endpoint the user is requesting\n"
             
             "The output will be sent directly to a browser.\n\n"
-            "Do not comment on the request, just provide the HTML response.\n\n"
+            "Do not comment on the request, do not add notes! just provide the HTML response.\n\n"
             "=== REQUEST DATA (JSON) ===\n"
             f"{request_dump}\n"
             "=== END REQUEST DATA ===\n"

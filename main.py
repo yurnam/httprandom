@@ -8,6 +8,9 @@ import os
 
 app = Flask(__name__)
 
+# Static files directory
+STATIC_DIR = os.path.join(os.path.dirname(__file__), 'static')
+
 # Store AI responses in memory with their status
 ai_responses = {}  # {request_id: {"status": "pending|ready", "content": "...", "timestamp": float}}
 ai_responses_lock = threading.Lock()  # Protect shared dictionary from race conditions
@@ -358,14 +361,12 @@ def check_status(request_id):
 @app.route("/favicon.ico")
 def favicon():
     """Serve the favicon without triggering AI generation"""
-    static_dir = os.path.join(os.path.dirname(__file__), 'static')
-    return send_from_directory(static_dir, 'favicon.ico', mimetype='image/x-icon')
+    return send_from_directory(STATIC_DIR, 'favicon.ico', mimetype='image/x-icon')
 
 @app.route("/robots.txt")
 def robots():
     """Serve robots.txt without triggering AI generation"""
-    static_dir = os.path.join(os.path.dirname(__file__), 'static')
-    return send_from_directory(static_dir, 'robots.txt', mimetype='text/plain')
+    return send_from_directory(STATIC_DIR, 'robots.txt', mimetype='text/plain')
 
 @app.route("/<path:path>", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
 @app.route("/", defaults={"path": ""}, methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])

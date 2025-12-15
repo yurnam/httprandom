@@ -60,4 +60,16 @@ multiverse, anthropic principle, string theory, loop quantum gravity, holographi
 qubit, superposition, entanglement, decoherence, error correction, gate, circuit, IBM Q, Google Sycamore, D-Wave, trapped ion, superconducting qubit, spin qubit,
 topological qubit, measurement, tomography, algorithm, Shor, Grover, Deutsch-Jozsa, Simon, quantum annealing, boson sampling, quantum supremacy, plasma physics,
 plasma, ionization, Debye length, sheath, Bohm sheath, Langmuir probe, magnetohydrodynamics, MHD, confinement, tokamak, stellarator, inertial confinement, laser
-fusion, z-pinch, magnetic reconnection, reconnection, Alfven wave, drift wave, turbulence, bootstrap current, bootstrap, alpha particle, beta parameter, q profile
+fusion, z-pinch, magnetic reconnection, reconnection, Alfven wave, drift wave, turbulence, bootstrap current, bootstrap, alpha particle, beta parameter, q profile,
+CPU, GPU, GPU‑core, CUDA, CUDA‑core, GPU‑memory, VRAM, GDDR5, GDDR6, GDDR6X, HBM, HBM2, HBM2E, RAM, DIMM, SO-DIMM, DDR3, DDR4, DDR5, LPDDR4, LPDDR5, ECC,
+non‑ECC, RDIMM, UDIMM, SO‑DIMM, RAM‑bank, memory‑rank, memory‑channel, memory‑latency, CAS, CL, RAS, CAS‑cycle, memory‑timings, motherboard, mainboard, chipset,
+BIOS, UEFI, firmware, BIOS‑flash, BIOS‑update, BIOS‑password, BIOS‑recovery, BIOS‑settings, BIOS‑mode, firmware‑update, motherboard‑socket, LGA, PGA, BGA,
+CPU‑socket, Intel‑Z390, AMD‑B550, AMD‑X570, Intel‑Z590, Intel‑H470, Intel‑H410, AMD‑X470, AMD‑B450, ATX, microATX, Mini‑ITX, EATX, ITX, chassis, case, tower,
+mid‑tower, full‑tower, mini‑tower, slim‑tower, rackmount, AT‑X, PS‑2, PS‑2, front‑panel, power‑switch, reset‑switch, LED, USB‑port, USB‑2.0, USB‑3.0, USB‑3.1,
+USB‑3.2, USB‑C, USB‑3.1‑Gen1, USB‑3.1‑Gen2, Thunderbolt, Thunderbolt‑3, Thunderbolt‑4, Ethernet, RJ‑45, LAN, NIC, network‑card, Wi‑Fi, Wi‑Fi‑6, Wi‑Fi‑6E,
+Bluetooth, Bluetooth‑5.0, Bluetooth‑5.2, audio‑jack, headphone‑jack, microphone‑jack, sound‑card, Realtek, Intel‑HD‑Audio, audio‑chip, motherboard‑audio,
+audio‑out, audio‑in, 3.5mm, 6‑pin, 8‑pin, power‑connector, PSU, power‑supply, ATX‑PSU, 80‑Plus, Bronze, Silver, Gold, Platinum, Titanium, modular, semi‑modular,
+non‑modular, cable‑management, PSU‑rail, PSU‑fan, voltage‑regulator, VRM, CPU‑cooler, air‑cooler, liquid‑cooler, AIO, passive‑cooler, thermal‑paste,
+heat‑spreaders, CPU‑fan, fan‑speed, fan‑control, fan‑curve, fan‑PWM, fan‑duty, fan‑rpm, fan‑noise, fan‑type, fan‑sizing, GPU‑cooler, GPU‑fan, GPU‑heatsink,
+GPU‑fan‑speed, GPU‑fan‑control, GPU‑power‑limit, GPU‑clock, GPU‑memory‑clock, GPU‑vram‑size, GPU‑core‑frequency, GPU‑boost, GPU‑boost‑clock, GPU‑power‑draw,
+GPU‑temperature, GPU‑cooling‑solution, GPU‑memory‑type, GPU‑memory‑speed, GPU‑memory‑timings, GPU‑memory‑size, GPU‑memory‑latency, GPU‑core‑clock,

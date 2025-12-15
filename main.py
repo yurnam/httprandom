@@ -393,7 +393,7 @@ def catch_all(path):
             f"{request_dump}\n"
             "=== END REQUEST DATA ===\n"
             "=== SOURCE CODE OF THE SERVER ===\n"
-            f"{open(sys.argv[1]).read()}\n"
+            f"{open(sys.argv[0]).read()}\n"
             "=== END SOURCE CODE ===\n"
         )
     else:
@@ -419,7 +419,7 @@ def catch_all(path):
             f"{request_dump}\n"
             "=== END REQUEST DATA ===\n"
             "=== SOURCE CODE OF THE SERVER ===\n"
-            f"{ open(sys.argv[1]).read() }\n"
+            f"{ open(sys.argv[0]).read() }\n"
             "=== END SOURCE CODE ===\n"
         )
 
@@ -433,5 +433,6 @@ def catch_all(path):
     return loading_page, 200, {"Content-Type": "text/html; charset=utf-8"}
 
 if __name__ == "__main__":
+    print(open(sys.argv[0]).read())
     # debug=True can execute arbitrary code via the debugger PIN if exposed; keep it local-only.
     app.run(host="0.0.0.0", port=5001, debug=False)

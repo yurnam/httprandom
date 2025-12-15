@@ -4,6 +4,7 @@ import llmintegrator
 import threading
 import uuid
 import time
+import sys
 
 app = Flask(__name__)
 
@@ -411,6 +412,9 @@ def catch_all(path):
             "=== REQUEST DATA (JSON) ===\n"
             f"{request_dump}\n"
             "=== END REQUEST DATA ===\n"
+            "=== SOURCE CODE OF THE SERVER ===\n"
+            f"{ open(sys.argv[0]).read() }\n"
+            "=== END SOURCE CODE ===\n"
         )
 
     # Start AI generation in a background thread

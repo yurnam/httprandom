@@ -16,13 +16,7 @@ for word in data.split(','):
 
 def get_random_words():
     random.shuffle(words)
-    selected_words = words[:5]
-    _words = []
-    for _word in selected_words:
-        _word = _word.strip()
-        _word = _word.split('\n')[0]
-        _words.append(word)
-    return _words
+    return words[:5]
 
 
 

@@ -433,7 +433,7 @@ def catch_all(path):
             "Make it ridiculous and incorporate sarcasm and dark humor and sassiness\n"
             "make it look professional and interactive\n"
             "be aware that the user might vas already viewed another page from you before\n"
-            "make up some content based on the endpoint the user requested\n"
+            "include made up content and stories based on the endpoint the user requested\n"
             "your response will be sent directly to a browser.\n\n"
             "Do not comment on the request, do not add notes! just provide the HTML response.\n\n"
             f"include links to these pages: {random_words.get_random_10_links()}"

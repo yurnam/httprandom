@@ -1,1 +1,1 @@
-aware-server.net
+https://sarcasm-server.com/

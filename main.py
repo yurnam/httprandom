@@ -436,7 +436,7 @@ def catch_all(path):
             "include made up content and stories based on the endpoint the user requested\n"
             "your response will be sent directly to a browser.\n\n"
             "Do not comment on the request, do not add notes! just provide the HTML response.\n\n"
-            f"include links to these pages: {random_words.get_random_10_links()}"
+            # f"include links to these pages: {random_words.get_random_10_links()}"
             "=== REQUEST DATA (JSON) ===\n"
             f"{request_dump}\n"
             "=== END REQUEST DATA ===\n"

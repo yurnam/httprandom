@@ -22,6 +22,18 @@ for word in data.split(','):
 
 
 
+def get_random_words():
+    random.shuffle(words)
+    selected_words = words[:5]
+    _words = []
+    for word in selected_words:
+        word = word.strip()
+        word = word.split('\n')[0]
+        words.append(word)
+    return _words
+
+
+
 
 def get_random_links():
     random.shuffle(words)

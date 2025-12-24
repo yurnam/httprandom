@@ -440,7 +440,6 @@ def catch_all(path):
             "=== REQUEST DATA (JSON) ===\n"
             f"{request_dump}\n"
             "=== END REQUEST DATA ===\n"
-            "=== SOURCE CODE OF THE SERVER ===\n"
         )
 
     # Start AI generation in a background thread

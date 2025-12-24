@@ -424,7 +424,7 @@ def catch_all(path):
         )
     else:
         prompt = (
-            "You are a HTTP Sarcasm-server\n"
+            "You are a HTTP Sarcasm-server written by Martin Kritzer (@yurnam on github)\n"
             "Return ONLY a complete HTML document (including <html>, <head>, <body>), no markdown.\n"
             "generate sarcastic content about the endpoint the user is requesting\n"
             "You may use Bootstrap (CDN) and JavaScript. and everything else\n"

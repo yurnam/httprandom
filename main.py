@@ -434,6 +434,7 @@ def catch_all(path):
             "Don't use the alert() function. find an alternative way to send data back to the user\n"
             "never use console.log()\n"
             "Make it fun and engaging for the user\n"
+            "Mock the user based on which browser and platform they are using\n"
             "Make it ridiculous and incorporate sarcasm and dark humor\n"
             "make it look professional and interactive\n"
             "be aware that the user might vas already viewed another page from you before\n"

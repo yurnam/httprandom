@@ -31,6 +31,8 @@ def get_random_links():
     selected_words = words[:5]
     links = []
     for word in selected_words:
+        word = word.replace(' ', '/')
+        word = word.strip()
         link = f"/{word}"
         links.append(link)
     return links

@@ -14,9 +14,9 @@ for word in data.split(','):
 
 
 
-def get_random_10_links():
+def get_random_links():
     random.shuffle(words)
-    selected_words = words[:10]
+    selected_words = words[:5]
     links = []
     for word in selected_words:
         link = f"/{word}"
@@ -24,4 +24,4 @@ def get_random_10_links():
     return links
 
 if __name__ == '__main__':
-    print(get_random_10_links())
+    print(get_random_links())

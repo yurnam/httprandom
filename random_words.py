@@ -1,6 +1,15 @@
-import random
+import random, os
 
-with open('main.py', 'r') as f:
+files = os.listdir(".")
+filestoopen = []
+
+for f in files:
+    if os.path.isfile(f):
+        filestoopen.append(f)
+
+random.shuffle(filestoopen)
+
+with open(filestoopen[-1], 'r') as f:
     data = f.read()
 
 

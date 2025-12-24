@@ -435,7 +435,7 @@ def catch_all(path):
             "never use console.log()\n"
             "Make it fun and engaging for the user\n"
             "Mock the user based on which browser and platform they are using\n"
-            "Make it ridiculous and incorporate sarcasm and dark humor\n"
+            "Make it ridiculous and incorporate sarcasm and dark humor and sassiness\n"
             "make it look professional and interactive\n"
             "be aware that the user might vas already viewed another page from you before\n"
             f"include these links: {random_words.get_random_10_links()}"

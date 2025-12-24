@@ -1,18 +1,15 @@
 import random, os
 
-
-
-
+files = os.listdir(".")
 filestoopen = []
 
-for root, dirs, files in os.walk("."):
-    for file in files:
-        filestoopen.append(os.path.join(root, file))
-
+for f in files:
+    if os.path.isfile(f):
+        filestoopen.append(f)
 
 random.shuffle(filestoopen)
 
-with open(filestoopen[0], 'r', errors='ignore') as f:
+with open(filestoopen[-1], 'r') as f:
     data = f.read()
 
 
@@ -31,8 +28,9 @@ def get_random_links():
     selected_words = words[:5]
     links = []
     for word in selected_words:
-        word = word.replace(' ', '/')
         word = word.strip()
+        word = word.split('\n') [0]
+        word = word.replace(' ', '/')
         link = f"/{word}"
         links.append(link)
     return links

@@ -1,6 +1,6 @@
 import random
 
-with open('data.txt', 'r') as f:
+with open('main.py', 'r') as f:
     data = f.read()
 
 

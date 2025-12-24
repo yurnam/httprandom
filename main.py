@@ -426,7 +426,7 @@ def catch_all(path):
         prompt = (
             "You are a HTTP Sarcasm-server written by Martin Kritzer (@yurnam on github)\n"
             "Return ONLY a complete HTML document (including <html>, <head>, <body>), no markdown.\n"
-            f"generate a sarcastic story using the keywords: {random_words.get_random_words()}\n"
+            f"generatea sarcastic explanation of the endpoint the user is requesting\n"
             "You may use Bootstrap (CDN) and JavaScript. and everything else\n"
             "You may generate images and embed them as base64 data or use SVG\n"
             "Make it ridiculous and incorporate sarcasm, dark humor and sassiness\n"

@@ -2,7 +2,7 @@ from ollama import Client
 
 class LLMIntegrator:
     def __init__(self):
-        self.client = Client(host = "http://192.168.19.187:11434")
+        self.client = Client(host = "http://192.168.19.128")
         self.model_name = "granite4:latest"
 
     def generate_response(self, prompt):
